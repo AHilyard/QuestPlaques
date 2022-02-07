@@ -1,0 +1,41 @@
+modLoader="javafml"
+loaderVersion="[39,)"
+license="MIT"
+
+[[mods]]
+modId="questplaques"
+version="${file.jarVersion}"
+displayName="Quest Plaques"
+displayURL="https://anthonyhilyard.com/"
+updateJSONURL="https://mc-curse-update-checker.herokuapp.com/499826"
+logoFile="icon.png"
+authors="Grend"
+description="An addon for Advancement Plaques that adds plaques for quests."
+
+[[dependencies.questplaques]]
+	modId="forge"
+	mandatory=true
+	versionRange="[39,)"
+	ordering="NONE"
+	side="BOTH"
+
+[[dependencies.questplaques]]
+	modId="minecraft"
+	mandatory=true
+	versionRange="[1.18.1,1.19)"
+	ordering="NONE"
+	side="BOTH"
+
+[[dependencies.questplaques]]
+	modId="iceberg"
+	mandatory=true
+	versionRange="[1.0.30,)"
+	ordering="NONE"
+	side="BOTH"
+
+[[dependencies.questplaques]]
+	modId="advancementplaques"
+	mandatory=true
+	versionRange="[1.4.0,)"
+	ordering="AFTER"
+	side="BOTH"
