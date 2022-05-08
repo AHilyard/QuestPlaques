@@ -54,19 +54,19 @@ dependencies {
 	minecraft "net.minecraftforge:forge:${project.mcVersion}-${project.forgeVersion}"
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
-	implementation fg.deobf('curse.maven:iceberg-520110:3561115')
-	implementation fg.deobf('curse.maven:placebo-283644:3568836')
-	implementation fg.deobf('curse.maven:toastcontrol-271740:3566996')
-	implementation fg.deobf('curse.maven:jade-324717:3551337')
-	implementation fg.deobf('curse.maven:advancementplaques-499826:3576905')
+	implementation fg.deobf('curse.maven:iceberg-520110:3675774')
+	implementation fg.deobf('curse.maven:placebo-283644:3781199')
+	implementation fg.deobf('curse.maven:toastcontrol-271740:3717855')
+	implementation fg.deobf('curse.maven:jade-324717:3761542')
+	implementation fg.deobf('curse.maven:advancementplaques-499826:3783429')
 
 	// FTB Quests support
-	implementation fg.deobf('curse.maven:architectury-419699:3636540')
-	implementation fg.deobf('curse.maven:ftblibrary-404465:3598890')
-	implementation fg.deobf('curse.maven:ftbquests-289412:3627555')
+	implementation fg.deobf('curse.maven:architectury-419699:3782874')
+	implementation fg.deobf('curse.maven:ftblibrary-404465:3725485')
+	implementation fg.deobf('curse.maven:ftbquests-289412:3725771')
 
-	// Custom Quests support
-	implementation fg.deobf('curse.maven:customquests-334985:3620925')
+	// Custom Quests, will be readded once 1.18.2 is supported.
+	// implementation fg.deobf('curse.maven:customquests-334985:3620925')
 }
 
 jar {

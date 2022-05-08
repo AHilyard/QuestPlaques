@@ -33,6 +33,7 @@ public class QuestPlaquesConfig
 	public final LongValue titleColor;
 	public final LongValue nameColor;
 
+	public final BooleanValue consolidateSimpleQuests;
 	private final ConfigValue<List<? extends String>> whitelist;
 
 	public QuestPlaquesConfig(ForgeConfigSpec.Builder build)
@@ -50,6 +51,7 @@ public class QuestPlaquesConfig
 
 		build.pop().push("functionality_options");
 
+		consolidateSimpleQuests = build.comment(" Whether to skip the task plaque for quests that only have a single task.").define("consolidate_simple_quests", true);
 		whitelist = build.comment(" Whitelist of quests to show plaques for.  Leave empty to display for all.  Specify as numerical quest ID for FTB Quests and Custom Quests.").defineListAllowEmpty(Arrays.asList("whitelist"), () -> new ArrayList<String>(), QuestPlaquesConfig::validateWhitelist );
 
 		build.pop().pop();

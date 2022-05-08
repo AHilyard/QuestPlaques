@@ -7,6 +7,7 @@ import com.anthonyhilyard.advancementplaques.AdvancementPlaquesToastGuiWithToast
 import com.anthonyhilyard.iceberg.renderer.CustomItemRenderer;
 import com.anthonyhilyard.questplaques.QuestPlaque;
 import com.anthonyhilyard.questplaques.QuestPlaques;
+import com.anthonyhilyard.questplaques.QuestPlaque.QuestDisplay;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,10 +39,14 @@ public class AdvancementPlaquesToastGuiWithToastControlMixin extends BetterToast
 	boolean redirectIsEmpty(Deque<AdvancementToast> instance)
 	{
 		// If we have completed quests waiting, show those first (in case completing a quest grants an advancement, this is less confusing).
-		if (!QuestPlaques.completedQuests.isEmpty())
+		if (QuestPlaques.hasCompletedQuests())
 		{
-			plaques[0] = new QuestPlaque(QuestPlaques.completedQuests.removeFirst(), mc, itemRenderer);
-			return true;
+			QuestDisplay quest = QuestPlaques.getNextCompletedQuest();
+			if (quest != null)
+			{
+				plaques[0] = new QuestPlaque(quest, mc, itemRenderer);
+				return true;
+			}
 		}
 
 		// No pending quests to display, just do normal functionality.

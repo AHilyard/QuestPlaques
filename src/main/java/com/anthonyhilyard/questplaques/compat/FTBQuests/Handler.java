@@ -38,6 +38,7 @@ public class Handler
 				FrameType frame = frameMap.getOrDefault(questObject.getObjectType(), FrameType.TASK);
 				FormattedText title = new TranslatableComponent(questObject.getObjectType().translationKey + ".completed").withStyle(questObject.getObjectType().getColor());
 				FormattedText questName = questObject.getTitle();
+
 				ItemStack itemStack = ItemStack.EMPTY;
 				Icon icon = questObject.getIcon();
 				long questID = questObject.id;
@@ -55,35 +56,21 @@ public class Handler
 					}
 				}
 
-				if (questObject instanceof Task taskObject)
+				boolean skipPlaque = !QuestPlaquesConfig.INSTANCE.shouldShowPlaque(frame, questID);
+
+				// Check if this is a task from a simple quest and skip it if configured so.
+				if (!skipPlaque && QuestPlaquesConfig.INSTANCE.consolidateSimpleQuests.get() && questObject instanceof Task taskObject)
 				{
 					Quest quest = taskObject.quest;
-					if (quest.isCompletedRaw(event.getData()))
+					if (quest.tasks.size() == 1)
 					{
-						frame = frameMap.getOrDefault(quest.getObjectType(), FrameType.TASK);
-						title = new TranslatableComponent(quest.getObjectType().translationKey + ".completed").withStyle(quest.getObjectType().getColor());
-						questName = quest.getTitle();
-						icon = quest.getIcon();
-						questID = quest.id;
-						if (icon instanceof ItemIcon itemIcon)
-						{
-							itemStack = itemIcon.getStack();
-						}
-						
-						if (itemStack.isEmpty())
-						{
-							Icon altIcon = quest.getAltIcon();
-							if (altIcon instanceof ItemIcon itemIcon)
-							{
-								itemStack = itemIcon.getStack();
-							}
-						}
+						skipPlaque = true;
 					}
 				}
 
-				if (QuestPlaquesConfig.INSTANCE.shouldShowPlaque(frame, questID))
+				if (!skipPlaque)
 				{
-					QuestPlaques.completedQuests.push(new QuestDisplay(questName, title, itemStack, frame));
+					QuestPlaques.addCompletedQuest(new QuestDisplay(questName, title, itemStack, frame));
 				}
 			}
 			return EventResult.pass();
