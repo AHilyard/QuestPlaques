@@ -4,13 +4,14 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.TickEvent.RenderTickEvent;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.anthonyhilyard.questplaques.QuestPlaque.QuestDisplay;
+import com.anthonyhilyard.questplaques.event.QuestCompletedEvent;
 import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -21,6 +22,11 @@ public class QuestPlaques
 	private static final int QUEST_DELAY = 2;
 	private static final List<QuestDisplay> completedQuests = Lists.newArrayList();
 	private static int questTimer = 0;
+
+	public static void init()
+	{
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(QuestPlaques::onClientSetup);
+	}
 
 	public static boolean hasCompletedQuests()
 	{
@@ -60,7 +66,16 @@ public class QuestPlaques
 		}
 	}
 
-	public void onClientSetup(FMLClientSetupEvent event)
+	@SubscribeEvent
+	public static void onQuestCompleted(QuestCompletedEvent event)
+	{
+		if (QuestPlaquesConfig.INSTANCE.shouldShowPlaque(event.getQuestInfo().frame(), event.getQuestID()))
+		{
+			addCompletedQuest(event.getQuestInfo());
+		}
+	}
+
+	public static void onClientSetup(FMLClientSetupEvent event)
 	{
 		event.enqueueWork(new Runnable()
 		{

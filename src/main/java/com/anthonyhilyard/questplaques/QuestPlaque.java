@@ -17,9 +17,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.toasts.Toast.Visibility;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.FormattedText;
 
 
 public class QuestPlaque extends AdvancementPlaque
@@ -31,9 +29,6 @@ public class QuestPlaque extends AdvancementPlaque
 	private final Minecraft minecraft;
 	private final CustomItemRenderer itemRenderer;
 	private final QuestDisplay display;
-
-
-	public record QuestDisplay(FormattedText questName, FormattedText title, ItemStack stack, FrameType frame) {}
 
 	public QuestPlaque(@Nonnull QuestDisplay display, Minecraft mcIn, CustomItemRenderer itemRendererIn)
 	{

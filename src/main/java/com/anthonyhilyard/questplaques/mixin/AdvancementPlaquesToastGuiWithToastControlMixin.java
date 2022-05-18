@@ -7,7 +7,7 @@ import com.anthonyhilyard.advancementplaques.AdvancementPlaquesToastGuiWithToast
 import com.anthonyhilyard.iceberg.renderer.CustomItemRenderer;
 import com.anthonyhilyard.questplaques.QuestPlaque;
 import com.anthonyhilyard.questplaques.QuestPlaques;
-import com.anthonyhilyard.questplaques.QuestPlaque.QuestDisplay;
+import com.anthonyhilyard.questplaques.QuestDisplay;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
