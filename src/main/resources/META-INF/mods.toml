@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[39,)"
+loaderVersion="[36,)"
 license="MIT"
 
 [[mods]]
@@ -15,14 +15,14 @@ description="An addon for Advancement Plaques that adds plaques for quests."
 [[dependencies.questplaques]]
 	modId="forge"
 	mandatory=true
-	versionRange="[39,)"
+	versionRange="[36,)"
 	ordering="NONE"
 	side="BOTH"
 
 [[dependencies.questplaques]]
 	modId="minecraft"
 	mandatory=true
-	versionRange="[1.18.1,1.19)"
+	versionRange="[1.16.5]"
 	ordering="NONE"
 	side="BOTH"
 
@@ -36,6 +36,13 @@ description="An addon for Advancement Plaques that adds plaques for quests."
 [[dependencies.questplaques]]
 	modId="advancementplaques"
 	mandatory=true
-	versionRange="[1.4.0,)"
+	versionRange="[1.4.1,)"
+	ordering="AFTER"
+	side="BOTH"
+
+[[dependencies.questplaques]]
+	modId="ftbquests"
+	mandatory=false
+	versionRange="[1605.3.0,)"
 	ordering="AFTER"
 	side="BOTH"

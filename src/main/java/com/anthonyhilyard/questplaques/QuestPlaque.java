@@ -5,21 +5,21 @@ import javax.annotation.Nonnull;
 import com.anthonyhilyard.advancementplaques.AdvancementPlaque;
 import com.anthonyhilyard.advancementplaques.AdvancementPlaques;
 import com.anthonyhilyard.advancementplaques.AdvancementPlaquesConfig;
+
 import com.anthonyhilyard.iceberg.renderer.CustomItemRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.Util;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.toasts.Toast.Visibility;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.FormattedText;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.gui.toasts.ToastGui;
+import net.minecraft.client.gui.toasts.IToast.Visibility;
+
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.LanguageMap;
 
 
 public class QuestPlaque extends AdvancementPlaque
@@ -32,8 +32,6 @@ public class QuestPlaque extends AdvancementPlaque
 	private final CustomItemRenderer itemRenderer;
 	private final QuestDisplay display;
 
-
-	public record QuestDisplay(FormattedText questName, FormattedText title, ItemStack stack, FrameType frame) {}
 
 	public QuestPlaque(@Nonnull QuestDisplay display, Minecraft mcIn, CustomItemRenderer itemRendererIn)
 	{
@@ -55,16 +53,17 @@ public class QuestPlaque extends AdvancementPlaque
 
 	private float getVisibility(long currentTime)
 	{
-		float f = Mth.clamp((float)(currentTime - animationTime) / 200.0f, 0.0f, 1.0f);
+		float f = MathHelper.clamp((float)(currentTime - animationTime) / 200.0f, 0.0f, 1.0f);
 		f = f * f;
 		return visibility == Visibility.HIDE ? 1.0f - f : f;
 	}
 
-	private Visibility drawPlaque(PoseStack poseStack, long displayTime)
+	@SuppressWarnings("deprecation")
+	private Visibility drawPlaque(MatrixStack matrixStack, long displayTime)
 	{
 		float fadeInTime = 500f, fadeOutTime = 1500f, duration = 7000f;
 		
-		switch (display.frame())
+		switch (display.frame)
 		{
 			default:
 			case TASK:
@@ -102,57 +101,50 @@ public class QuestPlaque extends AdvancementPlaque
 			tempAlpha = (int)(((tempColor >> 24) & 0xFF) * alpha);
 			int nameColor = (tempColor & 0xFFFFFF) | (tempAlpha << 24);
 
+			minecraft.getTextureManager().bind(AdvancementPlaques.TEXTURE_PLAQUES);
 			RenderSystem.enableBlend();
-			RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
-			RenderSystem.setShaderTexture(0, AdvancementPlaques.TEXTURE_PLAQUES);
+			RenderSystem.color4f(1.0f, 1.0f, 1.0f, alpha);
+
 			int frameOffset = 0;
-			if (display.frame() == FrameType.GOAL)
+			if (display.frame == FrameType.GOAL)
 			{
 				frameOffset = 1;
 			}
-			else if (display.frame() == FrameType.CHALLENGE)
+			else if (display.frame == FrameType.CHALLENGE)
 			{
 				frameOffset = 2;
 			}
-			GuiComponent.blit(poseStack, -1, -1, 0, height() * frameOffset, width(), height(), 256, 256);
+			ToastGui.blit(matrixStack, -1, -1, 0, height() * frameOffset, width(), height(), 256, 256);
 
 			// Only bother drawing text if alpha is greater than 0.1.
 			if (alpha > 0.1f)
 			{
 				// Text like "Challenge Complete!" at the top of the plaque.
-				int typeWidth = minecraft.font.width(display.title());
-				minecraft.font.draw(poseStack, Language.getInstance().getVisualOrder(display.title()), (width() - typeWidth) / 2.0f + 15.0f, 5.0f, titleColor);
+				int typeWidth = minecraft.font.width(display.title);
+				minecraft.font.draw(matrixStack, LanguageMap.getInstance().getVisualOrder(display.title), (width() - typeWidth) / 2.0f + 15.0f, 5.0f, titleColor);
 
-				int titleWidth = minecraft.font.width(display.questName());
+				int titleWidth = minecraft.font.width(display.questName);
 
 				// If the width of the advancement title is less than the full available width, display it normally.
 				if (titleWidth <= (220 / 1.5f))
 				{
-					PoseStack modelViewStack = RenderSystem.getModelViewStack();
-					modelViewStack.pushPose();
-					modelViewStack.scale(1.5f, 1.5f, 1.0f);
-					RenderSystem.applyModelViewMatrix();
-					minecraft.font.draw(poseStack, Language.getInstance().getVisualOrder(display.questName()), ((width() / 1.5f) - titleWidth) / 2.0f + (15.0f / 1.5f), 9.0f, nameColor);
-					modelViewStack.popPose();
-					RenderSystem.applyModelViewMatrix();
+					RenderSystem.pushMatrix();
+					RenderSystem.scalef(1.5f, 1.5f, 1.0f);
+					minecraft.font.draw(matrixStack, LanguageMap.getInstance().getVisualOrder(display.questName), ((width() / 1.5f) - titleWidth) / 2.0f + (15.0f / 1.5f), 9.0f, nameColor);
+					RenderSystem.popMatrix();
 				}
 				// Otherwise, display it with a smaller (default) font.
 				else
 				{
-					minecraft.font.draw(poseStack, Language.getInstance().getVisualOrder(display.questName()), (width() - titleWidth) / 2.0f + 15.0f, 15.0f, nameColor);
+					minecraft.font.draw(matrixStack, LanguageMap.getInstance().getVisualOrder(display.questName), (width() - titleWidth) / 2.0f + 15.0f, 15.0f, nameColor);
 				}
 			}
 
-			PoseStack modelViewStack = RenderSystem.getModelViewStack();
-			modelViewStack.pushPose();
-			modelViewStack.translate(1.0f, 1.0f, 0.0f);
-			modelViewStack.scale(1.5f, 1.5f, 1.0f);
-
-			RenderSystem.applyModelViewMatrix();
-			itemRenderer.renderItemModelIntoGUIWithAlpha(display.stack(), 1, 1, alpha);
-			
-			modelViewStack.popPose();
-			RenderSystem.applyModelViewMatrix();
+			RenderSystem.pushMatrix();
+			RenderSystem.translatef(1.0f, 1.0f, 0.0f);
+			RenderSystem.scalef(1.5f, 1.5f, 1.0f);
+			itemRenderer.renderItemModelIntoGUIWithAlpha(display.stack, 1, 1, alpha);
+			RenderSystem.popMatrix();
 
 			if (!hasPlayedSound)
 			{
@@ -160,25 +152,25 @@ public class QuestPlaque extends AdvancementPlaque
 
 				try
 				{
-					switch (display.frame())
+					switch (display.frame)
 					{
 						case TASK:
 							if (!AdvancementPlaquesConfig.INSTANCE.muteTasks.get())
 							{
-								minecraft.getSoundManager().play(SimpleSoundInstance.forUI(AdvancementPlaques.TASK_COMPLETE.get(), 1.0f, 1.0f));
+								minecraft.getSoundManager().play(SimpleSound.forUI(AdvancementPlaques.TASK_COMPLETE.get(), 1.0f, 1.0f));
 							}
 							break;
 						case GOAL:
 							if (!AdvancementPlaquesConfig.INSTANCE.muteGoals.get())
 							{
-								minecraft.getSoundManager().play(SimpleSoundInstance.forUI(AdvancementPlaques.GOAL_COMPLETE.get(), 1.0f, 1.0f));
+								minecraft.getSoundManager().play(SimpleSound.forUI(AdvancementPlaques.GOAL_COMPLETE.get(), 1.0f, 1.0f));
 							}
 							break;
 						default:
 						case CHALLENGE:
 							if (!AdvancementPlaquesConfig.INSTANCE.muteChallenges.get())
 							{
-								minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f));
+								minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f));
 							}
 							break;
 					}
@@ -198,30 +190,33 @@ public class QuestPlaque extends AdvancementPlaque
 				alpha = (float)displayTime / fadeInTime;
 			}
 
+			RenderSystem.enableAlphaTest();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
-			poseStack.pushPose();
-			poseStack.translate(0.0f, 0.0f, 95.0f);
-			RenderSystem.setShaderTexture(0, AdvancementPlaques.TEXTURE_PLAQUE_EFFECTS);
+			RenderSystem.defaultAlphaFunc();
+			RenderSystem.color4f(1.0f, 1.0f, 1.0f, alpha);
+			matrixStack.pushPose();
+			matrixStack.translate(0.0f, 0.0f, 95.0f);
+			minecraft.getTextureManager().bind(AdvancementPlaques.TEXTURE_PLAQUE_EFFECTS);
 
-			if (display.frame() == FrameType.CHALLENGE)
+			if (display.frame == FrameType.CHALLENGE)
 			{
-				GuiComponent.blit(poseStack, -16, -16, 0, height() + 32, width() + 32, height() + 32, 512, 512);
+				ToastGui.blit(matrixStack, -16, -16, 0, height() + 32, width() + 32, height() + 32, 512, 512);
 			}
 			else
 			{
-				GuiComponent.blit(poseStack, -16, -16, 0, 0, width() + 32, height() + 32, 512, 512);
+				ToastGui.blit(matrixStack, -16, -16, 0, 0, width() + 32, height() + 32, 512, 512);
 			}
-			poseStack.popPose();
+			matrixStack.popPose();
 		}
 
 		return displayTime >= fadeInTime + fadeOutTime + duration ? Visibility.HIDE : Visibility.SHOW;
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean render(int screenWidth, int index, PoseStack poseStack)
+	public boolean render(int screenWidth, int index, MatrixStack matrixStack)
 	{
 		long currentTime = Util.getMillis();
 		if (animationTime == -1L)
@@ -235,28 +230,23 @@ public class QuestPlaque extends AdvancementPlaque
 			visibleTime = currentTime;
 		}
 		
+		RenderSystem.pushMatrix();
 		RenderSystem.disableDepthTest();
-		PoseStack modelViewStack = RenderSystem.getModelViewStack();
-		modelViewStack.pushPose();
-
 		if (AdvancementPlaquesConfig.INSTANCE.onTop.get())
 		{
-			modelViewStack.translate((float)(minecraft.getWindow().getGuiScaledWidth() - width()) / 2.0f,
+			RenderSystem.translatef((float)(minecraft.getWindow().getGuiScaledWidth() - width()) / 2.0f,
 			AdvancementPlaquesConfig.INSTANCE.distance.get(),
 									 900.0f + index);
 		}
 		else
 		{
-			modelViewStack.translate((float)(minecraft.getWindow().getGuiScaledWidth() - width()) / 2.0f,
+			RenderSystem.translatef((float)(minecraft.getWindow().getGuiScaledWidth() - width()) / 2.0f,
 									 (float)(minecraft.getWindow().getGuiScaledHeight() - (height() + AdvancementPlaquesConfig.INSTANCE.distance.get())),
 									 900.0f + index);
 		}
-		RenderSystem.applyModelViewMatrix();
-		Visibility newVisibility = drawPlaque(poseStack, currentTime - visibleTime);
-
-		modelViewStack.popPose();
-		RenderSystem.applyModelViewMatrix();
+		Visibility newVisibility = drawPlaque(matrixStack, currentTime - visibleTime);
 		RenderSystem.enableDepthTest();
+		RenderSystem.popMatrix();
 
 		if (newVisibility != visibility)
 		{

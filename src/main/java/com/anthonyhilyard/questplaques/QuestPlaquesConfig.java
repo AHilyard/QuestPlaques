@@ -77,8 +77,9 @@ public class QuestPlaquesConfig
 				return true;
 			}
 
-			if (questID instanceof Number number)
+			if (questID instanceof Number)
 			{
+				Number number = (Number)questID;
 				String decimalString = Long.toString(number.longValue());
 				String hexString = Long.toHexString(number.longValue());
 				
@@ -100,8 +101,9 @@ public class QuestPlaquesConfig
 		{
 			return true;
 		}
-		else if (value instanceof String string)
+		else if (value instanceof String)
 		{
+			String string = (String)value;
 			try
 			{
 				Long.parseLong(string);

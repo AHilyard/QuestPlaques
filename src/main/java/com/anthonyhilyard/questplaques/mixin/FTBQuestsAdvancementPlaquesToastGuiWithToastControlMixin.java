@@ -8,15 +8,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import dev.ftb.mods.ftbquests.gui.ToastQuestObject;
-import net.minecraft.client.gui.components.toasts.Toast;
-import shadows.toaster.BetterToastComponent;
+import net.minecraft.client.gui.toasts.IToast;
+import shadows.toaster.BetterGuiToast;
 
 
 @Mixin(AdvancementPlaquesToastGuiWithToastControl.class)
-public class FTBQuestsAdvancementPlaquesToastGuiWithToastControlMixin extends BetterToastComponent
+public class FTBQuestsAdvancementPlaquesToastGuiWithToastControlMixin extends BetterGuiToast
 {
 	@Inject(method = "addToast", at = @At("HEAD"), cancellable = true)
-	public void cancelQuestToasts(Toast toastIn, CallbackInfo info)
+	public void cancelQuestToasts(IToast toastIn, CallbackInfo info)
 	{
 		if (toastIn instanceof ToastQuestObject)
 		{

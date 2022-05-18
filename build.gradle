@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 
 archivesBaseName = project.name + '-' + project.mcVersion
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 mixin {
 	add sourceSets.main, "${project.name.toLowerCase()}.refmap.json"
@@ -31,6 +31,11 @@ minecraft {
 			properties 'terminal.ansi': 'true'
 			workingDirectory project.file('run').canonicalPath
 			source sourceSets.main
+
+			arg "-mixin.debug=true"
+			arg "-mixin.checks.interfaces=true"
+			property 'mixin.env.remapRefMap', 'true'
+			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 		}
 	}
 }
@@ -52,21 +57,21 @@ sourceSets {
 
 dependencies {
 	minecraft "net.minecraftforge:forge:${project.mcVersion}-${project.forgeVersion}"
-	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+	annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 
-	implementation fg.deobf('curse.maven:iceberg-520110:3675774')
-	implementation fg.deobf('curse.maven:placebo-283644:3781199')
-	implementation fg.deobf('curse.maven:toastcontrol-271740:3717855')
-	implementation fg.deobf('curse.maven:jade-324717:3761542')
-	implementation fg.deobf('curse.maven:advancementplaques-499826:3783429')
+	implementation fg.deobf('curse.maven:iceberg-520110:3439178')
+	implementation fg.deobf('curse.maven:placebo-283644:3437009')
+	implementation fg.deobf('curse.maven:toastcontrol-271740:3172881')
+	implementation fg.deobf('curse.maven:jade-324717:3302544')
+	implementation fg.deobf('curse.maven:advancementplaques-499826:3507674')
 
 	// FTB Quests support
-	implementation fg.deobf('curse.maven:architectury-419699:3782874')
-	implementation fg.deobf('curse.maven:ftblibrary-404465:3725485')
-	implementation fg.deobf('curse.maven:ftbquests-289412:3725771')
+	implementation fg.deobf('curse.maven:architectury-419699:3782883')
+	implementation fg.deobf('curse.maven:ftblibrary-404465:3553840')
+	implementation fg.deobf('curse.maven:ftbquests-289412:3672855')
 
-	// Custom Quests, will be readded once 1.18.2 is supported.
-	// implementation fg.deobf('curse.maven:customquests-334985:3620925')
+	// Custom Quests support
+	implementation fg.deobf('curse.maven:customquests-334985:3636451')
 }
 
 jar {

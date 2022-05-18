@@ -7,7 +7,7 @@ import com.anthonyhilyard.advancementplaques.AdvancementPlaquesToastGuiWithToast
 import com.anthonyhilyard.iceberg.renderer.CustomItemRenderer;
 import com.anthonyhilyard.questplaques.QuestPlaque;
 import com.anthonyhilyard.questplaques.QuestPlaques;
-import com.anthonyhilyard.questplaques.QuestPlaque.QuestDisplay;
+import com.anthonyhilyard.questplaques.QuestDisplay;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,12 +16,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.toasts.AdvancementToast;
-import shadows.toaster.BetterToastComponent;
+import net.minecraft.client.gui.toasts.AdvancementToast;
+import shadows.toaster.BetterGuiToast;
 
 
 @Mixin(AdvancementPlaquesToastGuiWithToastControl.class)
-public class AdvancementPlaquesToastGuiWithToastControlMixin extends BetterToastComponent
+public class AdvancementPlaquesToastGuiWithToastControlMixin extends BetterGuiToast
 {
 	@Shadow(remap = false)
 	@Final

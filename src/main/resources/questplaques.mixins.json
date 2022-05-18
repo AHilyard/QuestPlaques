@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"package": "com.anthonyhilyard.questplaques.mixin",
-	"compatibilityLevel": "JAVA_17",
+	"compatibilityLevel": "JAVA_8",
 	"refmap": "questplaques.refmap.json",
 	"plugin": "com.anthonyhilyard.questplaques.mixin.MixinConfig",
 	"client": [
@@ -13,6 +13,6 @@
 	"injectors": {
 		"defaultRequire": 1
 	},
-	"minVersion": "0.8.5",
+	"minVersion": "0.8.3",
 	"target": "@env(DEFAULT)"
 }
