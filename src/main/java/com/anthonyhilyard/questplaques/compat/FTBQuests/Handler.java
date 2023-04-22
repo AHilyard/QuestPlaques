@@ -77,7 +77,7 @@ public class Handler
 		QuestObject quest = ClientQuestFile.INSTANCE.get(questID);
 
 		// Toast is disabled for this quest object, so bail.
-		if (quest.disableToast)
+		if (quest.disableToast || quest.getQuestChapter().alwaysInvisible)
 		{
 			return;
 		}
